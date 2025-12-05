@@ -16,23 +16,20 @@ jobs:
       uses: actions/checkout@v4
       
     - name: Ustawienie środowiska Java 8
-      # Ze względu na stare biblioteki (bukkit-1.6.4), trzymamy się Javy 8
+      # Ze względu na stare biblioteki (bukkit-1.6.4), używamy Javy 8
+      # (Usunięto błędną linię 'cache: ant', której setup-java nie obsługuje)
       uses: actions/setup-java@v4
       with:
-        java-version: '21'
+        java-version: '8'
         distribution: 'temurin'
-        cache: 'ant' 
 
     - name: Kompilacja projektu za pomocą Ant
-      # Wywołuje komendy 'clean' i 'jar' z Twojego pliku build.xml
-      run: ant -buildfile build.xml clean jar
+      # Zmiana komendy: Twój build.xml ma target 'build', który wykonuje całą robotę.
+      # Targety 'clean' i 'jar' nie są zdefiniowane osobno w Twoim pliku xml.
+      run: ant -buildfile build.xml build
       
     - name: Przesyłanie artefaktu (gotowego pliku .jar)
-      # 💥 Poprawiona akcja: używa się actions/upload-artifact@v4 💥
       uses: actions/upload-artifact@v4
       with:
-        # Nazwa, pod którą artefakt będzie widoczny w GitHub Actions
         name: MineResetLite-Build
-        # Ścieżka do skompilowanego pliku .jar.
-        # Sprawdziłem plik build.xml - domyślnie to MineResetLite.jar
         path: MineResetLite.jar
