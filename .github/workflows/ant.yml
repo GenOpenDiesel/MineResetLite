@@ -1,6 +1,5 @@
-name: Kompilacja Pluginu Java (Ant)
+name: Kompilacja Pluginu Java (Ant) - MC 1.21
 
-# Kiedy uruchomić workflow: po pushu lub pull request na gałęziach main/master
 on:
   push:
     branches: [ main, master ]
@@ -15,21 +14,29 @@ jobs:
     - name: Sprawdzenie kodu
       uses: actions/checkout@v4
       
-    - name: Ustawienie środowiska Java 8
-      # Ze względu na stare biblioteki (bukkit-1.6.4), używamy Javy 8
-      # (Usunięto błędną linię 'cache: ant', której setup-java nie obsługuje)
+    - name: Ustawienie środowiska Java 21
+      # Minecraft 1.21 wymaga Javy 21
       uses: actions/setup-java@v4
       with:
-        java-version: '8'
+        java-version: '21'
         distribution: 'temurin'
 
-    - name: Kompilacja projektu za pomocą Ant
-      # Zmiana komendy: Twój build.xml ma target 'build', który wykonuje całą robotę.
-      # Targety 'clean' i 'jar' nie są zdefiniowane osobno w Twoim pliku xml.
+    - name: Pobieranie Spigot API 1.21 (opcjonalne, ale pomocne)
+      # Próbujemy pobrać API 1.21, żeby zastąpić stary bukkit-1.6.4.jar
+      # Jeśli masz właściwe pliki w folderze lib/, ten krok można pominąć.
+      run: |
+        mkdir -p lib
+        # Pobieramy Spigot API z repozytorium Mavena (wersja przykładowa 1.21)
+        wget -O lib/spigot-api-1.21.jar https://repo.papermc.io/repository/maven-public/io/papermc/paper/paper-api/1.21-R0.1-SNAPSHOT/paper-api-1.21-R0.1-20240708.163825-33.jar || echo "Nie udało się pobrać Paper API, używam plików z lib/"
+
+    - name: Kompilacja projektu
+      # Uruchamiamy Ant. Pamiętaj, że w folderze 'lib' muszą być WSZYSTKIE wymagane biblioteki:
+      # 1. Spigot/Paper 1.21 (zamiast starego bukkita)
+      # 2. Biblioteki vk2gpz (np. VkLib.jar), których wymaga Twój kod!
       run: ant -buildfile build.xml build
       
-    - name: Przesyłanie artefaktu (gotowego pliku .jar)
+    - name: Przesyłanie artefaktu
       uses: actions/upload-artifact@v4
       with:
-        name: MineResetLite-Build
+        name: MineResetLite-1.21
         path: MineResetLite.jar
