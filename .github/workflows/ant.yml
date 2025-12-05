@@ -7,19 +7,16 @@ on:
   pull_request:
     branches: [ main, master ]
 
-# Definicja zadań (jobs)
 jobs:
   build:
-    # Uruchomienie na najnowszej maszynie Ubuntu
     runs-on: ubuntu-latest
 
-    # Kroki (steps) do wykonania w zadaniu
     steps:
     - name: Sprawdzenie kodu
       uses: actions/checkout@v4
       
     - name: Ustawienie środowiska Java 8
-      # Plugin Bukkit/Spigot z tamtego okresu zazwyczaj wymaga Javy 8
+      # Ze względu na stare biblioteki (bukkit-1.6.4), trzymamy się Javy 8
       uses: actions/setup-java@v4
       with:
         java-version: '8'
@@ -31,10 +28,11 @@ jobs:
       run: ant -buildfile build.xml clean jar
       
     - name: Przesyłanie artefaktu (gotowego pliku .jar)
-      # Ten krok zapisze skompilowany plik jako artefakt, który możesz pobrać
-      uses: actions/upload-artifact@v3
+      # 💥 Poprawiona akcja: używa się actions/upload-artifact@v4 💥
+      uses: actions/upload-artifact@v4
       with:
+        # Nazwa, pod którą artefakt będzie widoczny w GitHub Actions
         name: MineResetLite-Build
+        # Ścieżka do skompilowanego pliku .jar.
+        # Sprawdziłem plik build.xml - domyślnie to MineResetLite.jar
         path: MineResetLite.jar
-        # Uwaga: Musisz upewnić się, że plik .jar ma taką nazwę i znajduje się
-        # w katalogu głównym po kompilacji Ant. Jeśli jest w innym miejscu, zmień ścieżkę.
