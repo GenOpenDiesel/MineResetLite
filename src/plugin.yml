@@ -2,7 +2,7 @@ name: ${project.ext.mainClass}
 version: ${project.version}
 api-version: 1.13
 main: com.koletar.jj.mineresetlite.MineResetLite
-authors: [jjkoletar, vk2gpz]
+authors: [genallthebest]
 description: A lightweight solution for Mine management.
 softdepend: [WorldEdit, FastAsyncWorldEdit, Multiverse-Core, ReWorld, TokenEnchant]
 commands:
